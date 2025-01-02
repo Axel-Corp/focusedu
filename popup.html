@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>FocusEdu</title>
+  </head>
+  <body>
+    <h1>FocusEdu</h1>
+    <p>Activez ou désactivez le blocage des réseaux sociaux.</p>
+    <button id="toggleButton">Activer</button>
+
+    <script>
+      let isEnabled = true;
+      const button = document.getElementById("toggleButton");
+
+      button.addEventListener("click", function() {
+        isEnabled = !isEnabled;
+        button.textContent = isEnabled ? "Désactiver" : "Activer";
+        chrome.storage.local.set({ focusMode: isEnabled });
+      });
+
+      chrome.storage.local.get("focusMode", function(data) {
+        isEnabled = data.focusMode !== undefined ? data.focusMode : true;
+        button.textContent = isEnabled ? "Désactiver" : "Activer";
+      });
+    </script>
+  </body>
+</html>
