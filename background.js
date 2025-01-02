@@ -1,28 +1,26 @@
+// Liste des sites à bloquer
 const blockedSites = [
-    "tiktok.com",
-    "youtube.com",
-    "instagram.com",
-    "facebook.com",
-    "twitter.com"
-  ];
-  
-  const allowedSites = [
-    "ecoledirecte.com",
-    "index-education.net",
-    "quizlet.com",
-    "ecole-directe.plus"
-  ];
-  
-  chrome.webNavigation.onBeforeNavigate.addListener(function(details) {
-    const url = new URL(details.url);
-    const hostname = url.hostname;
-  
-    if (blockedSites.includes(hostname)) {
-      chrome.tabs.update(details.tabId, { url: "about:blank" });
+  "tiktok.com",
+  "youtube.com",
+  "instagram.com",
+  "facebook.com",
+  "twitter.com"
+];
+
+// Écoute les mises à jour des onglets
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.url) {
+    try {
+      const url = new URL(changeInfo.url);
+      const hostname = url.hostname;
+
+      // Redirige vers attention.html si le site est bloqué
+      if (blockedSites.some(site => hostname.includes(site))) {
+        chrome.tabs.update(tabId, { url: chrome.runtime.getURL("attention.html") });
+        console.log(`Redirection vers attention.html pour ${hostname}`);
+      }
+    } catch (error) {
+      console.warn("URL non valide ou autre erreur :", error);
     }
-  
-    if (!allowedSites.some(site => hostname.includes(site))) {
-      chrome.tabs.update(details.tabId, { url: "about:blank" });
-    }
-  });
-  
+  }
+});
